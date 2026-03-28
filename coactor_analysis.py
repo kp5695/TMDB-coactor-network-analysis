@@ -345,7 +345,7 @@ if __name__ == "__main__":
 
     graph = Graph()
     graph.add_node(id='2975', name='Laurence Fishburne')
-    tmdb_api_utils = TMDBAPIUtils(api_key='10152dddc7d65e1fb0822dc1de34f963')
+    tmdb_api_utils = TMDBAPIUtils(api_key='YOUR_API_KEY_HERE')  # Replace with your actual TMDb API key
 
     # Build the co-actor network
     build_co_actor_network(graph, tmdb_api_utils, start_actor_id='2975')
