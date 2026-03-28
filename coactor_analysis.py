@@ -1,50 +1,10 @@
-import http.client
-import json
 import csv
 import requests
 
 
-#############################################################################################################################
-# cse6242 
-# All instructions, code comments, etc. contained within this notebook are part of the assignment instructions.
-# Portions of this file will auto-graded in Gradescope using different sets of parameters / data to ensure that values are not
-# hard-coded.
-#
-# Instructions:  Implement all methods in this file that have a return
-# value of 'NotImplemented'. See the documentation within each method for specific details, including
-# the expected return value
-#
-# Helper Functions:
-# You are permitted to write additional helper functions/methods or use additional instance variables within
-# the `Graph` class or `TMDbAPIUtils` class so long as the originally included methods work as required.
-#
-# Use:
-# The `Graph` class  is used to represent and store the data for the TMDb co-actor network graph.  This class must
-# also provide some basic analytics, i.e., number of nodes, edges, and nodes with the highest degree.
-#
-# The `TMDbAPIUtils` class is used to retrieve Actor/Movie data using themoviedb.org API.  We have provided a few necessary methods
-# to test your code w/ the API, e.g.: get_movie_cast(), get_movie_credits_for_person().  You may add additional
-# methods and instance variables as desired (see Helper Functions).
-#
-# The data that you retrieve from the TMDb API is used to build your graph using the Graph class.  After you build your graph using the
-# TMDb API data, use the Graph class write_edges_file & write_nodes_file methods to produce the separate nodes and edges
-# .csv files for submission to Gradescope.
-#
-# While building the co-actor graph, you will be required to write code to expand the graph by iterating
-# through a portion of the graph nodes and finding similar artists using the TMDb API. We will not grade this code directly
-# but will grade the resulting graph data in your nodes and edges .csv files.
-#
-#############################################################################################################################
-
-
 class Graph:
 
-    # Do not modify
     def __init__(self, with_nodes_file=None, with_edges_file=None):
-        """
-        option 1:  init as an empty graph and add nodes
-        option 2: init by specifying a path to nodes & edges files
-        """
         self.nodes = []
         self.edges = []
         if with_nodes_file and with_edges_file:
@@ -58,22 +18,12 @@ class Graph:
 
 
     def add_node(self, id: str, name: str) -> None:
-        """
-        add a tuple (id, name) representing a node to self.nodes if it does not already exist
-        The graph should not contain any duplicate nodes
-        """
         node = (id, name)
         if node not in self.nodes:
             self.nodes.append(node)
 
 
     def add_edge(self, source: str, target: str) -> None:
-        """
-        Add an edge between two nodes if it does not already exist.
-        An edge is represented by a tuple containing two strings: e.g.: ('source', 'target').
-        Where 'source' is the id of the source node and 'target' is the id of the target node
-        e.g., for two nodes with ids 'a' and 'b' respectively, add the tuple ('a', 'b') to self.edges
-        """
         edge = (source, target)
         reverse_edge = (target, source)
         # For undirected graph, check if edge exists in either direction
@@ -82,16 +32,10 @@ class Graph:
 
 
     def total_nodes(self) -> int:
-        """
-        Returns an integer value for the total number of nodes in the graph
-        """
         return len(self.nodes)
 
 
     def total_edges(self) -> int:
-        """
-        Returns an integer value for the total number of edges in the graph
-        """
         return len(self.edges)
 
 
@@ -127,22 +71,13 @@ class Graph:
 
 
     def print_nodes(self):
-        """
-        No further implementation required
-        May be used for de-bugging if necessary
-        """
         print(self.nodes)
 
 
     def print_edges(self):
-        """
-        No further implementation required
-        May be used for de-bugging if necessary
-        """
         print(self.edges)
 
 
-    # Do not modify
     def write_edges_file(self, path="edges.csv")->None:
         """
         write all edges out as .csv
@@ -161,7 +96,6 @@ class Graph:
         print("finished writing edges to csv")
 
 
-    # Do not modify
     def write_nodes_file(self, path="nodes.csv")->None:
         """
         write all nodes out as .csv
@@ -181,7 +115,6 @@ class Graph:
 
 class  TMDBAPIUtils:
 
-    # Do not modify
     def __init__(self, api_key:str):
         self.api_key=api_key
 
@@ -257,9 +190,6 @@ class  TMDBAPIUtils:
                 [{'id': '97909' # the id of the movie credit
                 'title': 'Long, Stock and Two Smoking Barrels' # the title (not original title) of the credit
                 'release_date': '2024-01-01' # the string value of the release_date value for the credit}, ... ]
-        
-        IMPORTANT: You should format your dates like 'YYYY-MM-DD' e.g. '2024-01-29'.  You can assume the API will 
-            format them in the same way. You can compare these as strings without doing any conversion.
         """
         url = f"https://api.themoviedb.org/3/person/{person_id}/movie_credits?language=en-US"
         headers = {
@@ -305,96 +235,6 @@ class  TMDBAPIUtils:
         except Exception as e:
             print(f"Error fetching movie credits for person_id {person_id}: {e}")
             return []
-
-
-#############################################################################################################################
-#
-# BUILDING YOUR GRAPH
-#
-# Working with the API:  See use of http.request: https://docs.python.org/3/library/http.client.html#examples
-#
-# Using TMDb's API, build a co-actor network for the actor's/actress' movies released in 1999.
-# In this graph, each node represents an actor
-# An edge between any two nodes indicates that the two actors/actresses acted in a movie together in 1999.
-# i.e., they share a movie credit.
-# e.g., An edge between Samuel L. Jackson and Robert Downey Jr. indicates that they have acted in one
-# or more movies together in 1999.
-#
-# For this assignment, we are interested in a co-actor network of movies in 1999; specifically,
-# we only want the first 5 co-actors in each movie credit with a release date in 1999.
-# Build your co-actor graph on the actor 'Laurence Fishburne' w/ person_id 2975.
-#
-# You will need to add extra functions or code to accomplish this.  We will not directly call or explicitly grade your
-# algorithm. We will instead measure the correctness of your output by evaluating the data in your nodes.csv and edges.csv files.
-#
-# GRAPH SIZE
-# Since the TMDB API is a live database, the number of nodes / edges in the final graph will vary slightly depending on when
-# you execute your graph building code. We take this into account by rebuilding the solution graph every few days and
-# updating the auto-grader.  We compare your graph to our solution with a margin of +/- 200 for nodes and +/- 300 for edges.
-# 
-# e.g., if the current solution contains 507 nodes then the min/max range is 307-707.
-# The same method is used to calculate the edges with the exception of using the aforementioned edge margin.
-# ----------------------------------------------------------------------------------------------------------------------
-# BEGIN BUILD CO-ACTOR NETWORK
-#
-# INITIALIZE GRAPH
-#   Initialize a Graph object with a single node representing Laurence Fishburne
-#
-# BEGIN BUILD BASE GRAPH:
-#   Find all of Laurence Fishburne's movie credits that have a release date in 1999.
-#   FOR each movie credit:
-#   |   get the movie cast members having an 'order' value between 0-4 (these are the co-actors)
-#   |
-#   |   FOR each movie cast member:
-#   |   |   using graph.add_node(), add the movie cast member as a node (keep track of all new nodes added to the graph)
-#   |   |   using graph.add_edge(), add an edge between the Laurence Fishburne (actor) node
-#   |   |   and each new node (co-actor/co-actress)
-#   |   END FOR
-#   END FOR
-# END BUILD BASE GRAPH
-#
-#
-# BEGIN LOOP - DO 2 TIMES:
-#   IF first iteration of loop:
-#   |   nodes = The nodes added in the BUILD BASE GRAPH (this excludes the original node of Laurence Fishburne!)
-#   ELSE
-#   |    nodes = The nodes added in the previous iteration:
-#   ENDIF
-#
-#   FOR each node in nodes:
-#   |  get the movie credits for the actor that have a release date in 1999.
-#   |
-#   |   FOR each movie credit:
-#   |   |   try to get the 5 movie cast members having an 'order' value between 0-4
-#   |   |
-#   |   |   FOR each movie cast member:
-#   |   |   |   IF the node doesn't already exist:
-#   |   |   |   |    add the node to the graph (track all new nodes added to the graph)
-#   |   |   |   ENDIF
-#   |   |   |
-#   |   |   |   IF the edge does not exist:
-#   |   |   |   |   add an edge between the node (actor) and the new node (co-actor/co-actress)
-#   |   |   |   ENDIF
-#   |   |   END FOR
-#   |   END FOR
-#   END FOR
-# END LOOP
-#
-# Your graph should not have any duplicate edges or nodes
-# Write out your finished graph as a nodes file and an edges file using:
-#   graph.write_edges_file()
-#   graph.write_nodes_file()
-#
-# END BUILD CO-ACTOR NETWORK
-# ----------------------------------------------------------------------------------------------------------------------
-
-# Exception handling and best practices
-# - You should use the param 'language=en-US' in all API calls to avoid encoding issues when writing data to file.
-# - If the actor name has a comma char ',' it should be removed to prevent extra columns from being inserted into the .csv file
-# - Some movie_credits do not return cast data. Handle this situation by skipping these instances.
-# - While The TMDb API does not have a rate-limiting scheme in place, consider that making hundreds / thousands of calls
-#   can occasionally result in timeout errors. If you continue to experience 'ConnectionRefusedError : [Errno 61] Connection refused',
-#   - wait a while and then try again.  It may be necessary to insert periodic sleeps when you are building your graph.
 
 
 def build_co_actor_network(graph: Graph, tmdb_api_utils: TMDBAPIUtils, start_actor_id: str) -> None:
@@ -451,7 +291,6 @@ def build_co_actor_network(graph: Graph, tmdb_api_utils: TMDBAPIUtils, start_act
     
     print(f"Base graph built. Added {len(nodes_to_process)} nodes")
     
-    # BEGIN LOOP - DO 2 TIMES
     for iteration in range(2):
         print(f"\nIteration {iteration + 1}/2")
         current_nodes = nodes_to_process.copy()
@@ -502,18 +341,6 @@ def build_co_actor_network(graph: Graph, tmdb_api_utils: TMDBAPIUtils, start_act
     print(f"\nFinal graph: {graph.total_nodes()} nodes, {graph.total_edges()} edges")
 
 
-def return_name()->str:
-    """
-    Return a string containing your GT Username
-    e.g., gburdell3
-    Do not return your 9 digit GTId
-    """
-    return 'kpalit3'
-
-
-# You should modify __main__ as you see fit to build/test your graph using  the TMDBAPIUtils & Graph classes.
-# Some boilerplate/sample code is provided for demonstration. We will not call __main__ during grading.
-
 if __name__ == "__main__":
 
     graph = Graph()
@@ -526,6 +353,4 @@ if __name__ == "__main__":
     graph.write_edges_file()
     graph.write_nodes_file()
 
-    # If you have already built & written out your graph, you could read in your nodes & edges files
-    # to perform testing on your graph.
-    # graph = Graph(with_edges_file="edges.csv", with_nodes_file="nodes.csv")
+    graph = Graph(with_edges_file="edges.csv", with_nodes_file="nodes.csv")
