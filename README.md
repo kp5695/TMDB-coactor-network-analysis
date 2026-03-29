@@ -11,7 +11,7 @@ The default configuration builds a network centered on **Laurence Fishburne**, u
 - Fetches movie credits and cast data from the TMDB API
 - Builds an undirected graph of co-actor relationships
 - Expands the network iteratively (up to 2 degrees of separation)
-- Exports the resulting graph to `nodes.csv` and `edges.csv` for use in visualization tools like [Gephi](https://gephi.org/) or [Cytoscape](https://cytoscape.org/)
+- Exports the resulting graph to `nodes.csv` and `edges.csv` 
 - Supports filtering by release date range and limiting cast size per movie
 
 ---
